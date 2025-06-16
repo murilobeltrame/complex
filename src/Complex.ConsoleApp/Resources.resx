@@ -21,4 +21,10 @@
     <data name="FileInputMissingOrInvalid" xml:space="preserve">
         <value>Please provide a .csproj or .sln file as the first argument.</value>
     </data>
+    <data name="ComplexityByNamespace" xml:space="preserve">
+        <value>Complexity by Namespace</value>
+    </data>
+    <data name="ComplexityByAssembly" xml:space="preserve">
+        <value>Complexity by Assembly</value>
+    </data>
 </root>

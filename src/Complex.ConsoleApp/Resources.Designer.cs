@@ -50,5 +50,17 @@ namespace Complex.ConsoleApp {
                 return ResourceManager.GetString("FileInputMissingOrInvalid", resourceCulture);
             }
         }
+        
+        internal static string ComplexityByNamespace {
+            get {
+                return ResourceManager.GetString("ComplexityByNamespace", resourceCulture);
+            }
+        }
+        
+        internal static string ComplexityByAssembly {
+            get {
+                return ResourceManager.GetString("ComplexityByAssembly", resourceCulture);
+            }
+        }
     }
 }
