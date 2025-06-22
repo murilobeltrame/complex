@@ -27,4 +27,22 @@
     <data name="ComplexityByAssembly" xml:space="preserve">
         <value>Complexity by Assembly</value>
     </data>
+    <data name="Dash" xml:space="preserve">
+        <value>---------------------------------------------------------------------------</value>
+    </data>
+    <data name="Namespace" xml:space="preserve">
+        <value>Namespace: {0}</value>
+    </data>
+    <data name="Assembly" xml:space="preserve">
+        <value>Assembly: {0}</value>
+    </data>
+    <data name="FileComplexity" xml:space="preserve">
+        <value>  {0} :: Complexity: {1} {2}</value>
+    </data>
+    <data name="TotalComplexity" xml:space="preserve">
+        <value>  Total Complexity: {0}</value>
+    </data>
+    <data name="AverageComplexity" xml:space="preserve">
+        <value>  Average Complexity: {0}</value>
+    </data>
 </root>

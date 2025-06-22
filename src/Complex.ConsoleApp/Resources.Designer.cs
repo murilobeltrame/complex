@@ -62,5 +62,41 @@ namespace Complex.ConsoleApp {
                 return ResourceManager.GetString("ComplexityByAssembly", resourceCulture);
             }
         }
+        
+        internal static string Dash {
+            get {
+                return ResourceManager.GetString("Dash", resourceCulture);
+            }
+        }
+        
+        internal static string Namespace {
+            get {
+                return ResourceManager.GetString("Namespace", resourceCulture);
+            }
+        }
+        
+        internal static string Assembly {
+            get {
+                return ResourceManager.GetString("Assembly", resourceCulture);
+            }
+        }
+        
+        internal static string FileComplexity {
+            get {
+                return ResourceManager.GetString("FileComplexity", resourceCulture);
+            }
+        }
+        
+        internal static string TotalComplexity {
+            get {
+                return ResourceManager.GetString("TotalComplexity", resourceCulture);
+            }
+        }
+        
+        internal static string AverageComplexity {
+            get {
+                return ResourceManager.GetString("AverageComplexity", resourceCulture);
+            }
+        }
     }
 }

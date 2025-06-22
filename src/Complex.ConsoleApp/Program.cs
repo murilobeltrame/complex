@@ -1,8 +1,8 @@
-﻿using System.Collections.Concurrent;
-using Complex.ConsoleApp;
+﻿using Complex.ConsoleApp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Collections.Concurrent;
 
 var inputFile = args.Length > 0 ? args[0] : null;
 if (inputFile is null || !(
@@ -12,6 +12,7 @@ if (inputFile is null || !(
     Console.WriteLine(Resources.FileInputMissingOrInvalid);
     return;
 }
+
 var directory = Path.GetDirectoryName(Path.GetFullPath(inputFile)) ?? Directory.GetCurrentDirectory();
 var files = Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories)
     .Where(f =>
@@ -28,12 +29,12 @@ var complexityByAssembly = new ConcurrentDictionary<string, List<(string File, i
 foreach (var file in files)
 {
     var code = File.ReadAllText(file);
-    var fileName = Path.GetFileName(file);
     var tree = CSharpSyntaxTree.ParseText(code);
     var root = tree.GetRoot();
 
     var namespaceName = GetNamespace(root);
     var assemblyName = GetAssemblyName(file);
+    var fileName = Path.GetFileName(file);
 
     var complexity = 0;
     var description = string.Empty;
@@ -43,13 +44,13 @@ foreach (var file in files)
 
         complexityByNamespace.AddOrUpdate(
             namespaceName,
-            new List<(string, int, string)> { (fileName, complexity, description) },
+            [(fileName, complexity, description)],
             (_, list) => { list.Add((fileName, complexity, description)); return list; }
         );
 
         complexityByAssembly.AddOrUpdate(
             assemblyName,
-            new List<(string, int, string)> { (fileName, complexity, description) },
+            [(fileName, complexity, description)],
             (_, list) => { list.Add((fileName, complexity, description)); return list; }
         );
     }
@@ -59,54 +60,62 @@ foreach (var file in files)
     {
         description = e.Message;
     }
+}
 
-    Console.WriteLine($"{fileName} :: Cyclomatic Complexity: {complexity}. {(string.IsNullOrWhiteSpace(description) ? string.Empty : description)}");
-
-    Console.WriteLine(Resources.ComplexityByNamespace);
-    foreach (var ns in complexityByNamespace.OrderBy(x => x.Key))
+Console.WriteLine(Resources.ComplexityByNamespace);
+foreach (var ns in complexityByNamespace.OrderBy(x => x.Key))
+{
+    Console.WriteLine(Resources.Namespace, ns.Key);
+    Console.WriteLine(Resources.Dash);
+    var totalComplexity = ns.Value.Sum(x => x.Complexity);
+    foreach (var file in ns.Value.OrderBy(x => x.File))
     {
-        Console.WriteLine($"\nNamespace: {ns.Key}");
-        var totalComplexity = ns.Value.Sum(x => x.Complexity);
-        foreach (var _file in ns.Value.OrderBy(x => x.File))
+        Console.WriteLine(Resources.FileComplexity,
+            file.File,
+            file.Complexity,
+            (string.IsNullOrWhiteSpace(file.Description) ? string.Empty : file.Description));
+    }
+    Console.WriteLine(Resources.TotalComplexity, totalComplexity);
+}
+
+Console.WriteLine(Resources.ComplexityByAssembly);
+foreach (var assembly in complexityByAssembly.OrderBy(x => x.Key))
+{
+    Console.WriteLine(Resources.Assembly, assembly.Key);
+    Console.WriteLine(Resources.Dash);
+    var totalComplexity = assembly.Value.Sum(x => x.Complexity);
+    foreach (var file in assembly.Value.OrderBy(x => x.File))
+    {
+        Console.WriteLine(Resources.FileComplexity,
+            file.File,
+            file.Complexity,
+            (string.IsNullOrWhiteSpace(file.Description) ? string.Empty : file.Description));
+    }
+    Console.WriteLine(Resources.TotalComplexity, totalComplexity);
+}
+
+return;
+
+static string GetNamespace(SyntaxNode root)
+{
+    var namespaceDeclaration = root.DescendantNodes()
+        .OfType<BaseNamespaceDeclarationSyntax>()
+        .FirstOrDefault();
+    return namespaceDeclaration?.Name.ToString() ?? "Global Namespace";
+}
+
+static string GetAssemblyName(string filePath)
+{
+    var projectDir = Path.GetDirectoryName(filePath);
+    while (projectDir != null)
+    {
+        if (Directory.GetFiles(projectDir, "*.csproj").Length > 0)
         {
-            Console.WriteLine($"  {_file.File} :: Complexity: {_file.Complexity} {(string.IsNullOrWhiteSpace(_file.Description) ? string.Empty : _file.Description)}");
+            return Path.GetFileName(projectDir);
         }
-        Console.WriteLine($"  Total Namespace Complexity: {totalComplexity}");
+        projectDir = Path.GetDirectoryName(projectDir);
     }
-
-    Console.WriteLine(Resources.ComplexityByAssembly);
-    foreach (var assembly in complexityByAssembly.OrderBy(x => x.Key))
-    {
-        Console.WriteLine($"\nAssembly: {assembly.Key}");
-        var totalComplexity = assembly.Value.Sum(x => x.Complexity);
-        foreach (var _file in assembly.Value.OrderBy(x => x.File))
-        {
-            Console.WriteLine($"  {_file.File} :: Complexity: {_file.Complexity} {(string.IsNullOrWhiteSpace(_file.Description) ? string.Empty : _file.Description)}");
-        }
-        Console.WriteLine($"  Total Assembly Complexity: {totalComplexity}");
-    }
-
-    static string GetNamespace(SyntaxNode root)
-    {
-        var namespaceDeclaration = root.DescendantNodes()
-            .OfType<BaseNamespaceDeclarationSyntax>()
-            .FirstOrDefault();
-        return namespaceDeclaration?.Name.ToString() ?? "Global Namespace";
-    }
-
-    static string GetAssemblyName(string filePath)
-    {
-        var projectDir = Path.GetDirectoryName(filePath);
-        while (projectDir != null)
-        {
-            if (Directory.GetFiles(projectDir, "*.csproj").Length > 0)
-            {
-                return Path.GetFileName(projectDir);
-            }
-            projectDir = Path.GetDirectoryName(projectDir);
-        }
-        return "Unknown Assembly";
-    }
+    return "Unknown Assembly";
 }
 
 static bool IsAutoGeneratedFile(string filePath)
