@@ -10,7 +10,7 @@ jobs:
 
   build:
 
-    runs-on: linux
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
@@ -28,13 +28,23 @@ jobs:
     - name: Execute unit tests
       run: dotnet test
 
-    # Publish package
-    - name: Compile
-      run: dotnet pack -o packaged
+    # Publish package with dynamic version
+    - name: Set version
+      id: vars
+      run: echo "VERSION=0.1.${{ github.run_number }}" >> $GITHUB_ENV
 
-    # Upload the MSIX package: https://github.com/marketplace/actions/upload-a-build-artifact
+    - name: Compile
+      run: dotnet pack -o packaged /p:Version=$VERSION
+
+    # Upload the NuGet package as an artifact
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: Nuget package
-        path: packaged/Complex.ConsoleApp.0.0.1.nupkg
+        path: packaged/Complex.ConsoleApp.$VERSION.nupkg
+
+    # Publish to NuGet.org
+    - name: Publish to NuGet.org
+      run: dotnet nuget push packaged/Complex.ConsoleApp.$VERSION.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
