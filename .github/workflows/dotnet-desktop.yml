@@ -36,15 +36,8 @@ jobs:
     - name: Compile
       run: dotnet pack -o packaged /p:Version=$VERSION
 
-    # Upload the NuGet package as an artifact
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: Nuget package
-        path: '**/packaged/Complex.ConsoleApp.*.nupkg'
-
-    # # Publish to NuGet.org
-    # - name: Publish to NuGet.org
-    #   run: dotnet nuget push packaged/Complex.ConsoleApp.$VERSION.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
-    #   env:
-    #     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+    # Publish to NuGet.org
+    - name: Publish to NuGet.org
+      run: dotnet nuget push packaged/Complex.ConsoleApp.$VERSION.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
