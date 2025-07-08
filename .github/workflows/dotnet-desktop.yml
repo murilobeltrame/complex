@@ -42,9 +42,11 @@ jobs:
       with:
         name: Nuget package
         path: packaged/Complex.ConsoleApp.$VERSION.nupkg
-
-    # Publish to NuGet.org
-    - name: Publish to NuGet.org
-      run: dotnet nuget push packaged/Complex.ConsoleApp.$VERSION.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
       env:
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        VERSION: ${{ env.VERSION }}
+
+    # # Publish to NuGet.org
+    # - name: Publish to NuGet.org
+    #   run: dotnet nuget push packaged/Complex.ConsoleApp.$VERSION.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+    #   env:
+    #     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
