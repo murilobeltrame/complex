@@ -41,9 +41,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Nuget package
-        path: packaged/Complex.ConsoleApp.$VERSION.nupkg
-      env:
-        VERSION: ${{ env.VERSION }}
+        path: '**/packaged/Complex.ConsoleApp.*.nupkg'
 
     # # Publish to NuGet.org
     # - name: Publish to NuGet.org
