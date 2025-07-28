@@ -17,14 +17,14 @@
       "rollForward": false
     },
     "roslynator.dotnet.cli": {
-      "version": "0.10.1",
+      "version": "0.10.2",
       "commands": [
         "roslynator"
       ],
       "rollForward": false
     },
     "dotnet-sonarscanner": {
-      "version": "10.2.0",
+      "version": "10.3.0",
       "commands": [
         "dotnet-sonarscanner"
       ],
